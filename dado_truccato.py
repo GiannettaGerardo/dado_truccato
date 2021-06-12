@@ -29,6 +29,15 @@ def calcoloNPj(n):
     return np
 
 
+def D0(np, fa):
+    sommatoria = 0
+    # np parte da 0
+    # fa parte da 1
+    for i in range(6):
+        sommatoria += ((fa[i+1] - np[i])**2) / np[i]
+    return sommatoria
+
+
 # MAIN
 if __name__ == '__main__':
 
@@ -59,4 +68,7 @@ if __name__ == '__main__':
     if (np[0] < 5):
         print('numero di tentativi troppo basso')
         exit()
+
+    Do = D0(np, frequenzeAssolute)
+    print(Do)
 
