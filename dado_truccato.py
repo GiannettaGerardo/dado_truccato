@@ -2,6 +2,12 @@ import math
 import sys
 
 
+# chiede in input le frequenze di ogni risultato possibile
+# in questo caso i possibili risultati sono {1, 2, 3, 4, 5, 6}
+#
+# output:
+# frequenzeAssolute (array/int): contiene il totale dei vari risultati
+#
 def inputFrequenze():
     frequenzeAssolute = []
     # la posizione 0 della lista non serve
@@ -12,6 +18,16 @@ def inputFrequenze():
     return frequenzeAssolute
 
 
+# calcola le frequenze di ogni risultato possibile in base ai singoli
+# risultati inseriti come parametro di input nel programma
+#
+# input:
+# risultatiSingoliLanci (array/string): contiene i risultati dei singoli lanci inseriti
+#                                       in input all'avvio del programma
+# 
+# output:
+# frequenzeAssolute (array/int): contiene il totale dei vari risultati
+#
 def calcoloSingoleFrequenze(risultatiSingoliLanci):
     frequenzeAssolute = [0] * 7
     # la posizione 0 della lista non serve
@@ -21,24 +37,46 @@ def calcoloSingoleFrequenze(risultatiSingoliLanci):
     return frequenzeAssolute
 
 
-# n : totale frequenze assolute
+# calcola gli NPj, ovvero la formula n*pj per ogni j=1,..,6
+#
+# input:
+# n (int): totale frequenze assolute
+#
+# output:
+# np (array/float): array contenente tutti gli npj  
+#
 def calcoloNPj(n):
     np = []
-    for i in range(6):
+    for j in range(6):
         np.append(n * (1/6))
     return np
 
 
+# calcola la formula D0, ovvero:2
+#
+#     n
+# Sommatoria ((nj - npj)**2)/npj
+#    j=0
+#
+# input:
+# np (array/float): contiene gli npj
+# fa (array/int): contiene le frequenze assolute
+#
+# output:
+# Do (float): la formula D0 calcolata 
+#
 def D0(np, fa):
-    sommatoria = 0
+    Do = 0
     # np parte da 0
     # fa parte da 1
-    for i in range(6):
-        sommatoria += ((fa[i+1] - np[i])**2) / np[i]
-    return sommatoria
+    for j in range(6):
+        Do += ((fa[j+1] - np[j])**2) / np[j]
+    return Do
 
 
-# MAIN
+##########################
+#          MAIN          #
+##########################
 if __name__ == '__main__':
 
     totaleFrequenzeAssolute = 0
