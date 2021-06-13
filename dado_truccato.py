@@ -1,5 +1,22 @@
-import math
 import sys
+
+
+# calcola il livello della variabile chi quadro e restituisce 
+# il quantile corrispondendo, solo per 6 gradi di liberta'
+#
+# input:
+# alfa (float): livello del test
+#
+# output:
+# tavola[livello] (float): il quantile corrispondente
+#
+def quantileChiQuadro6gradi(alfa):
+    livello = 1 - alfa
+    tavola = {
+            0.95 : 12.59159, 0.975 : 14.44938,
+            0.99 : 16.81189, 0.995 : 18.54758
+    }
+    return tavola[livello]
 
 
 # chiede in input le frequenze di ogni risultato possibile
@@ -13,8 +30,7 @@ def inputFrequenze():
     # la posizione 0 della lista non serve
     frequenzeAssolute.append(-1)
     for i in range(1, 7):
-        print(f'Frequenza del lato {i}: ')
-        frequenzeAssolute.append(int(input()))
+        frequenzeAssolute.append(int(input('Frequenza del lato ' + str(i) + ': ')))
     return frequenzeAssolute
 
 
@@ -32,8 +48,13 @@ def calcoloSingoleFrequenze(risultatiSingoliLanci):
     frequenzeAssolute = [0] * 7
     # la posizione 0 della lista non serve
     frequenzeAssolute[0] = -1
-    for risultato in risultatiSingoliLanci[1:]:
-        frequenzeAssolute[int(risultato)] += 1
+    try:
+        for risultato in risultatiSingoliLanci[1:]:
+            frequenzeAssolute[int(risultato)] += 1
+    except IndexError:
+        print('E\' stato inserito un risultato non consentito in un dado a 6 facce.')
+        print('Chiusura programma...')
+        exit()
     return frequenzeAssolute
 
 
@@ -43,13 +64,11 @@ def calcoloSingoleFrequenze(risultatiSingoliLanci):
 # n (int): totale frequenze assolute
 #
 # output:
-# np (array/float): array contenente tutti gli npj  
+# np (float): contiene tutti il valore dei vari npj 
+#             che in questo caso saranno tutti uguali  
 #
 def calcoloNPj(n):
-    np = []
-    for j in range(6):
-        np.append(n * (1/6))
-    return np
+    return n * (1/6)
 
 
 # calcola la formula D0, ovvero:2
@@ -59,18 +78,17 @@ def calcoloNPj(n):
 #    j=0
 #
 # input:
-# np (array/float): contiene gli npj
+# npj (float): contiene gli npj (tutti uguali in questo caso, 
+#              quindi sarà un solo valore)
 # fa (array/int): contiene le frequenze assolute
 #
 # output:
 # Do (float): la formula D0 calcolata 
 #
-def D0(np, fa):
+def D0(npj, fa):
     Do = 0
-    # np parte da 0
-    # fa parte da 1
-    for j in range(6):
-        Do += ((fa[j+1] - np[j])**2) / np[j]
+    for j in range(1, 7):
+        Do += ((fa[j] - npj)**2) / npj
     return Do
 
 
@@ -103,10 +121,12 @@ if __name__ == '__main__':
     np = calcoloNPj(totaleFrequenzeAssolute)
     print(np) # debug
 
-    if (np[0] < 5):
+    if (np < 5):
         print('numero di tentativi troppo basso')
         exit()
 
     Do = D0(np, frequenzeAssolute)
-    print(Do)
+    print(Do) # debug
 
+    print('inserisci livello')
+    print(quantileChiQuadro6gradi(float(input()))) # debug
