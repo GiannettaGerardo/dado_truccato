@@ -179,8 +179,7 @@ def checkDadoTruccato(Do, quantileChiQuadro):
 ##########################
 #          MAIN          #
 ##########################
-if __name__ == '__main__':
-
+def main():
     frequenzeAssolute = 0
     
     # esamina la scelta iniziale dell'utente:
@@ -221,3 +220,7 @@ if __name__ == '__main__':
         print(f'\nD0 > {quantile} : il dado e\' truccato')
     else:
         print(f'\nD0 <= {quantile} : il dado dovrebbe essere equilibrato')
+
+
+if __name__ == '__main__':
+    main()
