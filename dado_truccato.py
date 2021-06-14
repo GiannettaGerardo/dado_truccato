@@ -10,11 +10,11 @@ import sys
 # output:
 # tavola[livello] (float): il quantile corrispondente
 #
-def quantileChiQuadro6gradi(alfa):
+def quantileChiQuadro5gradi(alfa):
     livello = 1 - alfa
     tavola = {
-            0.95 : 12.59159, 0.975 : 14.44938,
-            0.99 : 16.81189, 0.995 : 18.54758
+            0.95 : 11.07050, 0.975 : 12.83250,
+            0.99 : 15.08627, 0.995 : 16.74960
     }
     return tavola[livello]
 
@@ -30,7 +30,7 @@ def inputFrequenze():
     # la posizione 0 della lista non serve
     frequenzeAssolute.append(-1)
     for i in range(1, 7):
-        frequenzeAssolute.append(int(input('Frequenza del lato ' + str(i) + ': ')))
+        frequenzeAssolute.append(int(input('frequenza del lato ' + str(i) + ': ')))
     return frequenzeAssolute
 
 
@@ -52,10 +52,40 @@ def calcoloSingoleFrequenze(risultatiSingoliLanci):
         for risultato in risultatiSingoliLanci[1:]:
             frequenzeAssolute[int(risultato)] += 1
     except IndexError:
-        print('E\' stato inserito un risultato non consentito in un dado a 6 facce.')
+        print('\nE\' stato inserito un risultato non consentito in un dado a 6 facce.')
         print('Chiusura programma...')
         exit()
     return frequenzeAssolute
+
+
+# controlla se np (in questo test è uguale per ogni j) è minore di 5,
+# nel caso lo fosse, significa che ogni npj è < 5 e non è possibile eseguire 
+# il test, perché altrimenti si avrebbe un quantile chi quadro con 0 gradi di liberta'.
+# In questo caso il programma termina
+#
+# input:
+# np (float): npj valido per ogni j -> (n * pj) con pj=1/6 per ogni j=1,...,6
+#
+def checkMinore5(np):
+    if (np < 5):
+        print('\nNumero di tentativi troppo basso.')
+        print('Chiusura programma...')
+        exit()
+
+
+# calcola il totale delle frequenze assolute, ovvero n
+#
+# input:
+# frequenzeAssolute (array/int): le frequenze assolute di ogni risultato del dado
+#
+# output:
+# totaleFrequenzeAssolute (int): il totale delle frequenze assolute, ovvero n
+#
+def calcoloTotaleFrequenzeAssolute(frequenzeAssolute):
+    totaleFrequenzeAssolute = 0
+    for frequenza in frequenzeAssolute[1:7]:
+        totaleFrequenzeAssolute += frequenza
+    return totaleFrequenzeAssolute
 
 
 # calcola gli NPj, ovvero la formula n*pj per ogni j=1,..,6
@@ -92,12 +122,65 @@ def D0(npj, fa):
     return Do
 
 
+# stampa il menu' per la scelta del livello del test
+#
+def menuSceltaLivelloTest():
+    print('scegli il livello del test. Seleziona:')
+    print('(1) : alfa = 0.05')
+    print('(2) : alfa = 0.025')
+    print('(3) : alfa = 0.01')
+    print('(4) : alfa = 0.005')
+
+
+# prende in input e controlla il livello alfa del test scelto 
+# tramite un menu di selezione
+# 
+# output:
+# alfa (float): il livello del test scelto
+#
+def inserisciLivelloTest():
+    switch = {
+        1 : 0.05,
+        2 : 0.025,
+        3 : 0.01,
+        4 : 0.005
+    }
+
+    while(True):
+        try:
+            alfa = int(input('>> '))
+            alfa = switch[alfa]
+        except (KeyError, ValueError):
+            print('Inserito un valore non consentito, riprova...')
+            alfa = False
+        finally:
+            if (alfa):
+                break
+    return alfa
+
+
+# controlla se il dado è truccato o meno, ovvero se ci troviamo
+# in regione critica o meno nel test
+#
+# input:
+# Do (float): 
+# quantileChiQuadro (float):
+#
+# output:
+# True (bool): se ci troviamo in regione critica e il dado è truccato
+# False (bool): se l'ipotesi del dado equilibrato è accettabile 
+# 
+def checkDadoTruccato(Do, quantileChiQuadro):
+    if (Do > quantileChiQuadro):
+        return True
+    return False
+
+
 ##########################
 #          MAIN          #
 ##########################
 if __name__ == '__main__':
 
-    totaleFrequenzeAssolute = 0
     frequenzeAssolute = 0
     
     # esamina la scelta iniziale dell'utente:
@@ -106,27 +189,35 @@ if __name__ == '__main__':
     #
     #   2. se l'utente inserisce i singoli risultati dei lanci del dado come parametro
     #      iniziale allora provedderà il programma a raggruppare e contare le frequenze
-
     if (len(sys.argv) == 1):
         frequenzeAssolute = inputFrequenze()
     else:
         frequenzeAssolute = calcoloSingoleFrequenze(sys.argv)
-    
-    print(frequenzeAssolute) # debug
+    print(f'\nfrequenze assolute: {frequenzeAssolute[1:]}')
 
-    for frequenza in frequenzeAssolute[1:7]:
-        totaleFrequenzeAssolute += frequenza
-    print(totaleFrequenzeAssolute) # debug
+    # calcola n
+    totaleFrequenzeAssolute = calcoloTotaleFrequenzeAssolute(frequenzeAssolute)
+    print(f'totale n: {totaleFrequenzeAssolute}')
     
+    # calcola gli npj che saranno tutti uguali
     np = calcoloNPj(totaleFrequenzeAssolute)
-    print(np) # debug
 
-    if (np < 5):
-        print('numero di tentativi troppo basso')
-        exit()
+    # controlla se gli npj sono < 5
+    checkMinore5(np)
 
+    # calcola la formula D0
     Do = D0(np, frequenzeAssolute)
-    print(Do) # debug
+    print(f'D0: {Do}\n')
 
-    print('inserisci livello')
-    print(quantileChiQuadro6gradi(float(input()))) # debug
+    # scegli il livello del test
+    menuSceltaLivelloTest()
+    alfa = inserisciLivelloTest()
+    
+    # ottieni il quantile chi quadro in base al livello del test scelto
+    quantile = quantileChiQuadro5gradi(alfa)
+
+    # controlla se il dado è truccato o potrebbe definirsi equilibrato
+    if (checkDadoTruccato(Do, quantile)):
+        print(f'\nD0 > {quantile} : il dado e\' truccato')
+    else:
+        print(f'\nD0 <= {quantile} : il dado dovrebbe essere equilibrato')
