@@ -2,8 +2,8 @@
 Analizza i risultati di un dado a 6 facce e scopri se è truccato o meno attraverso un test del chi quadro di adattamento
 
 ## Consigli per l'utilizzo:
-Il numero di tentativi da registrare deve essere adeguato (ovvero alto), più tentativi si inseriscono e più è affidabile il test.
-### si suggerisce un numero di tentativi >= 100
+Il numero di tentativi da registrare deve essere adeguato (**ovvero alto**), più tentativi si inseriscono e più è affidabile il test.
+## Si suggerisce un numero di tentativi >= 100 per un test più accurato
 ***
 ## Utilizzo:
 
